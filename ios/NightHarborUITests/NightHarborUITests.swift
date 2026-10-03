@@ -3,6 +3,10 @@ import XCTest
 final class NightHarborUITests: XCTestCase {
     override func setUpWithError() throws { continueAfterFailure = false }
     @MainActor private func capture(_ app: XCUIApplication, _ name: String) { let attachment = XCTAttachment(screenshot:app.screenshot()); attachment.name = name; attachment.lifetime = .keepAlways; add(attachment) }
+    @MainActor private func assertPlayback(_ app: XCUIApplication, playing: Bool, timeout: TimeInterval) {
+        let state = XCTNSPredicateExpectation(predicate:NSPredicate(format:"exists == true AND label == %@",playing ? "暂停" : "播放"),object:app.buttons["playerToggle"])
+        XCTAssertEqual(XCTWaiter.wait(for:[state],timeout:timeout),.completed)
+    }
     @MainActor func testOnboardingAndServerConfiguration() throws {
         let app = XCUIApplication(); app.launchArguments = ["--uitest-reset"]; app.launch()
         XCTAssertTrue(app.textFields["email"].waitForExistence(timeout:10))
@@ -12,7 +16,7 @@ final class NightHarborUITests: XCTestCase {
         app.buttons["取消"].tap()
         let shot = XCTAttachment(screenshot:app.screenshot()); shot.name = "Onboarding"; shot.lifetime = .keepAlways; add(shot)
     }
-    @MainActor func testLiveAccountDraftAndPlayback() throws {
+    @MainActor private func authenticatedLiveApp() throws -> XCUIApplication {
         let env = ProcessInfo.processInfo.environment
         guard let email = env["NIGHT_HARBOR_TEST_EMAIL"], let password = env["NIGHT_HARBOR_TEST_PASSWORD"] else { throw XCTSkip("Live acceptance requires a dedicated test account via xctestrun environment.") }
         addUIInterruptionMonitor(withDescription:"Password autofill") { alert in
@@ -27,8 +31,37 @@ final class NightHarborUITests: XCTestCase {
         XCTAssertTrue(app.tabBars.buttons["我的播客"].waitForExistence(timeout:30))
         let springboard = XCUIApplication(bundleIdentifier:"com.apple.springboard")
         if springboard.buttons["Not Now"].waitForExistence(timeout:3) { springboard.buttons["Not Now"].tap() }
-        else if app.buttons["Not Now"].exists { app.buttons["Not Now"].tap() }
+        else if app.buttons["Not Now"].waitForExistence(timeout:8) { app.buttons["Not Now"].tap() }
         XCTAssertTrue(app.buttons["Not Now"].waitForNonExistence(timeout:5))
+        return app
+    }
+    @MainActor func testLiveMiniPlayerNavigation() throws {
+        let env = ProcessInfo.processInfo.environment
+        guard env["NIGHT_HARBOR_TEST_READY_TITLE"] != nil else { throw XCTSkip("Requires a ready episode.") }
+        let app = try authenticatedLiveApp()
+        if env["NIGHT_HARBOR_TEST_READY_TITLE"] != nil {
+            let start = app.buttons["开始今晚"]
+            XCTAssertTrue(start.waitForExistence(timeout:10)); start.tap()
+            XCTAssertTrue(app.buttons["收起播放器"].waitForExistence(timeout:120))
+            app.buttons["收起播放器"].tap()
+            let miniPlayer = app.buttons["miniPlayerOpen"]
+            XCTAssertTrue(miniPlayer.waitForExistence(timeout:5))
+            for name in ["我的播客", "我的", "今晚"] {
+                let tab = app.tabBars.buttons[name]
+                XCTAssertTrue(tab.isHittable, "Playback must not block the \(name) tab")
+                XCTAssertLessThanOrEqual(miniPlayer.frame.maxY, tab.frame.minY, "Mini player must stay above the tab buttons")
+                tab.tap()
+                XCTAssertTrue(tab.isSelected, "Tapping \(name) must switch tabs")
+            }
+            capture(app,"Mini player above tabs")
+            miniPlayer.tap()
+            XCTAssertTrue(app.buttons["收起播放器"].waitForExistence(timeout:5))
+            app.buttons["收起播放器"].tap()
+        }
+    }
+    @MainActor func testLiveAccountDraftAndPlayback() throws {
+        let env = ProcessInfo.processInfo.environment
+        let app = try authenticatedLiveApp()
         capture(app,"Tonight")
         app.tabBars.buttons["我的播客"].coordinate(withNormalizedOffset:CGVector(dx:0.5,dy:0.5)).tap(); XCTAssertTrue(app.navigationBars["我的播客"].waitForExistence(timeout:5)); app.buttons["制作播客"].firstMatch.coordinate(withNormalizedOffset:CGVector(dx:0.5,dy:0.5)).tap()
         XCTAssertTrue(app.navigationBars["制作一段夜晚"].waitForExistence(timeout:5))
@@ -48,7 +81,7 @@ final class NightHarborUITests: XCTestCase {
         if let title = env["NIGHT_HARBOR_TEST_READY_TITLE"] {
             app.buttons.containing(.staticText,identifier:title).firstMatch.tap()
             app.buttons["继续收听"].tap()
-            XCTAssertTrue(app.buttons["暂停"].firstMatch.waitForExistence(timeout:120))
+            assertPlayback(app,playing:true,timeout:120)
             app.buttons["前进 15 秒"].tap()
             app.buttons["sleepTimer"].tap(); app.buttons["本集结束"].tap()
             XCTAssertTrue(app.buttons["sleepTimer"].label.contains("本集结束"))
@@ -57,16 +90,25 @@ final class NightHarborUITests: XCTestCase {
             Thread.sleep(forTimeInterval:3)
             app.activate()
             XCTAssertNotEqual(app.staticTexts["playbackElapsed"].label,beforeBackground)
-            XCTAssertTrue(app.buttons["暂停"].firstMatch.waitForExistence(timeout:10))
+            assertPlayback(app,playing:true,timeout:10)
             let shot = XCTAttachment(screenshot:app.screenshot()); shot.name = "Live player"; shot.lifetime = .keepAlways; add(shot)
             app.buttons["收起播放器"].tap()
             app.buttons.containing(.staticText,identifier:"MCP 验收 · 窗边雨声").firstMatch.tap()
             app.buttons["继续收听"].tap()
-            XCTAssertTrue(app.buttons["暂停"].firstMatch.waitForExistence(timeout:30))
+            let shortEpisodeProgress = app.sliders["播放进度"]
+            XCTAssertTrue(shortEpisodeProgress.waitForExistence(timeout:30))
+            // This live account may already have progress from another test run.
+            let fullPlayerToggle = app.buttons["playerToggle"]
+            if fullPlayerToggle.label == "暂停" { fullPlayerToggle.tap() }
+            let paused = XCTNSPredicateExpectation(predicate:NSPredicate(format:"label == %@","播放"),object:fullPlayerToggle)
+            XCTAssertEqual(XCTWaiter.wait(for:[paused],timeout:5),.completed)
+            shortEpisodeProgress.adjust(toNormalizedSliderPosition:0)
+            fullPlayerToggle.tap()
+            assertPlayback(app,playing:true,timeout:5)
             app.buttons["sleepTimer"].tap(); app.buttons["本集结束"].tap()
             let ended = XCTNSPredicateExpectation(predicate:NSPredicate(format:"label == %@","0:20"),object:app.staticTexts["playbackElapsed"])
             XCTAssertEqual(XCTWaiter.wait(for:[ended],timeout:35),.completed)
-            XCTAssertTrue(app.buttons["播放"].firstMatch.waitForExistence(timeout:5))
+            assertPlayback(app,playing:false,timeout:5)
             XCTAssertTrue(app.buttons["sleepTimer"].label.contains("不定时"))
             capture(app,"End of track stopped")
             app.terminate()
@@ -76,7 +118,7 @@ final class NightHarborUITests: XCTestCase {
             app.buttons.containing(.staticText,identifier:title).firstMatch.tap()
             XCTAssertTrue(app.staticTexts["已下载 · 可离线收听"].waitForExistence(timeout:5))
             app.buttons["继续收听"].tap()
-            XCTAssertTrue(app.buttons["暂停"].firstMatch.waitForExistence(timeout:15))
+            assertPlayback(app,playing:true,timeout:15)
             let offlineStart = app.staticTexts["playbackElapsed"].label
             let advancing = XCTNSPredicateExpectation(predicate:NSPredicate(format:"label != %@",offlineStart),object:app.staticTexts["playbackElapsed"])
             XCTAssertEqual(XCTWaiter.wait(for:[advancing],timeout:8),.completed)

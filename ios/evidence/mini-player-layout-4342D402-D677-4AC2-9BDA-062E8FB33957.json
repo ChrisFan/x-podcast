@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "device": "4342D402-D677-4AC2-9BDA-062E8FB33957",
+  "result_bundle": "/Users/chris/Cosmos/AIPodcast/ios/build/LiveAcceptance-20261003-222448.xcresult",
+  "checks": [
+    "start tonight and collapse full player",
+    "mini player stays above all three tab buttons",
+    "all tabs are hittable and switch selection",
+    "mini player reopens full player"
+  ],
+  "boundaries": [
+    "Simulator verification only; not yet released to TestFlight"
+  ]
+}

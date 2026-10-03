@@ -38,24 +38,67 @@ struct RootView: View {
         Group {
             if store.account == nil { LoginView() }
             else {
-                TabView(selection:$tab) {
-                    TonightView(showPlayer:$showPlayer).tabItem { Label("今晚",systemImage:"moon.stars") }.tag(0)
-                    LibraryView(showPlayer:$showPlayer).tabItem { Label("我的播客",systemImage:"square.stack") }.tag(1)
-                    SettingsView().tabItem { Label("我的",systemImage:"person.crop.circle") }.tag(2)
-                }.tint(.sage).safeAreaInset(edge:.bottom,spacing:0) {
-                    if let current = player.current {
-                        HStack(spacing:13) {
-                            Image(systemName:"waveform").foregroundStyle(Color.sage)
-                            Button { showPlayer = true } label: { VStack(alignment:.leading,spacing:3) { Text(current.title).font(.subheadline.weight(.medium)).lineLimit(1); Text(player.playing ? "正在播放 · \(clockText(player.position))" : "已暂停").font(.caption).foregroundStyle(Color.quiet) }.frame(maxWidth:.infinity,alignment:.leading) }.buttonStyle(.plain)
-                            Button { player.playing ? player.pause() : player.resume() } label: { Image(systemName:player.playing ? "pause.fill" : "play.fill").frame(width:44,height:44) }.accessibilityLabel(player.playing ? "暂停" : "播放")
-                        }.padding(.horizontal,20).padding(.vertical,5).background(Color.panel)
+                if #available(iOS 26.1, *) {
+                    tabs.tabViewBottomAccessory(isEnabled:player.current != nil) {
+                        MiniPlayerView(showPlayer:$showPlayer)
                     }
+                } else if #available(iOS 26.0, *) {
+                    tabs.tabViewBottomAccessory {
+                        if player.current != nil { MiniPlayerView(showPlayer:$showPlayer) }
+                    }
+                } else {
+                    tabs
                 }
             }
         }.preferredColorScheme(.dark).foregroundStyle(Color.cream)
         .sheet(isPresented:$showPlayer) { PlayerView() }
         .onChange(of:store.podcasts.map(\.id)) { _, ids in if let id = player.current?.id, !ids.contains(id) { player.stop() } }
         .alert("请稍等一下",isPresented:Binding(get:{store.error != nil || player.error != nil},set:{ if !$0 { store.error = nil; player.error = nil } })) { Button("知道了",role:.cancel) { store.error = nil; player.error = nil } } message: { Text(store.error ?? player.error ?? "") }
+    }
+    private var tabs: some View {
+        TabView(selection:$tab) {
+            TonightView(showPlayer:$showPlayer)
+                .modifier(LegacyMiniPlayerInset(showPlayer:$showPlayer))
+                .tabItem { Label("今晚",systemImage:"moon.stars") }.tag(0)
+            LibraryView(showPlayer:$showPlayer)
+                .modifier(LegacyMiniPlayerInset(showPlayer:$showPlayer))
+                .tabItem { Label("我的播客",systemImage:"square.stack") }.tag(1)
+            SettingsView()
+                .modifier(LegacyMiniPlayerInset(showPlayer:$showPlayer))
+                .tabItem { Label("我的",systemImage:"person.crop.circle") }.tag(2)
+        }.tint(.sage)
+    }
+}
+private struct LegacyMiniPlayerInset: ViewModifier {
+    @Binding var showPlayer: Bool
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) { content }
+        else {
+            // Reserve space inside each tab, above the system tab bar.
+            content.safeAreaInset(edge:.bottom,spacing:0) {
+                MiniPlayerView(showPlayer:$showPlayer).background(Color.panel)
+            }
+        }
+    }
+}
+private struct MiniPlayerView: View {
+    @EnvironmentObject var player: SleepPlayer
+    @Binding var showPlayer: Bool
+    var body: some View {
+        if let current = player.current {
+            HStack(spacing:13) {
+                Image(systemName:"waveform").foregroundStyle(Color.sage)
+                Button { showPlayer = true } label: {
+                    VStack(alignment:.leading,spacing:3) {
+                        Text(current.title).font(.subheadline.weight(.medium)).lineLimit(1)
+                        Text(player.playing ? "正在播放 · \(clockText(player.position))" : "已暂停").font(.caption).foregroundStyle(Color.quiet)
+                    }.frame(maxWidth:.infinity,alignment:.leading)
+                }.buttonStyle(.plain).accessibilityIdentifier("miniPlayerOpen")
+                Button { player.playing ? player.pause() : player.resume() } label: {
+                    Image(systemName:player.playing ? "pause.fill" : "play.fill").frame(width:44,height:44)
+                }.accessibilityLabel(player.playing ? "暂停" : "播放").accessibilityIdentifier("miniPlayerToggle")
+            }.padding(.horizontal,20).padding(.vertical,5)
+        }
     }
 }
 struct LoginView: View {
@@ -245,7 +288,7 @@ struct PlayerView: View {
                     VStack(spacing:6) { Slider(value:Binding(get:{scrubbing ? seeking : min(player.position,max(1,player.duration))},set:{seeking = $0}),in:0 ... max(1,player.duration),onEditingChanged:{ editing in if editing { seeking = player.position; scrubbing = true } else { scrubbing = false; player.seek(seeking) } }).tint(.sage).accessibilityLabel("播放进度"); HStack { Text(clockText(scrubbing ? seeking : player.position)).accessibilityIdentifier("playbackElapsed"); Spacer(); Text(clockText(player.duration)) }.font(.caption.monospacedDigit()).foregroundStyle(Color.quiet) }
                     HStack(spacing:48) {
                         Button { player.seek(player.position - 15) } label: { Image(systemName:"gobackward.15").font(.system(size:29,weight:.light)) }.accessibilityLabel("后退 15 秒")
-                        Button { player.playing ? player.pause() : player.resume() } label: { Image(systemName:player.playing ? "pause.fill" : "play.fill").font(.system(size:27)).foregroundStyle(Color.harbor).frame(width:78,height:78).background(Color.sage,in:Circle()) }.accessibilityLabel(player.playing ? "暂停" : "播放")
+                        Button { player.playing ? player.pause() : player.resume() } label: { Image(systemName:player.playing ? "pause.fill" : "play.fill").font(.system(size:27)).foregroundStyle(Color.harbor).frame(width:78,height:78).background(Color.sage,in:Circle()) }.accessibilityLabel(player.playing ? "暂停" : "播放").accessibilityIdentifier("playerToggle")
                         Button { player.seek(player.position + 15) } label: { Image(systemName:"goforward.15").font(.system(size:29,weight:.light)) }.accessibilityLabel("前进 15 秒")
                     }
                     Menu { ForEach([0,15,30,45,60,-1],id:\.self) { value in Button(value == 0 ? "关闭定时" : value == -1 ? "本集结束" : "\(value) 分钟") { player.setTimer(value) } } } label: { Label("睡眠定时 · \(player.timerLabel)",systemImage:"moon.zzz").font(.subheadline).padding(.horizontal,22).padding(.vertical,13).background(Color.panel,in:Capsule()) }.accessibilityIdentifier("sleepTimer")
