@@ -1,56 +1,25 @@
-# Dependencies
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# Build outputs
-dist/
-dist-ssr/
-*.local
-
-# Environment variables
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea/
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.pyc
+output/
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+.local/
+deploy/artifacts/
+node_modules/
+.pytest_cache/
+*.egg-info/
+ios/build/
+ios/DerivedData/
 
-# Logs
-logs/
-*.log
-
-# OS files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Testing
-coverage/
-.nyc_output/
-
-# Temporary files
-*.tmp
-*.temp
-.cache/
-
-# Vite
-.vite/
-
+# Signing credentials and distributable build artifacts stay local.
+*.p8
+*.p12
+*.pem
+*.key
+*.mobileprovision
+*.ipa
+*.xcarchive/
+*.dSYM/

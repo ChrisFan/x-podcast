@@ -1,0 +1,22 @@
+{
+  "passed": [
+    "HTTPS API and worker health",
+    "registration/login and unauthenticated denial",
+    "schema validation and persisted preferences",
+    "cross-account detail/audio/delete/cancel rejected",
+    "account-scoped MCP token creation and revocation",
+    "duplicate generation request reuses same podcast",
+    "real Aliyun generation, persisted ready state, authenticated MP3 Range",
+    "playback progress persisted and all lifecycle events recorded"
+  ],
+  "podcast_id": "49df1434-5da8-41f2-b050-3ee0bc4a0aeb",
+  "duration_seconds": 374.44,
+  "title": "雨夜旅馆 · 云端首夜",
+  "states": [
+    "draft",
+    "generating",
+    "mixing",
+    "queued",
+    "ready"
+  ]
+}

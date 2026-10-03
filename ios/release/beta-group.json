@@ -1,0 +1,1 @@
+{"data":{"type":"betaGroups","attributes":{"name":"夜航内部 Beta","isInternalGroup":true,"hasAccessToAllBuilds":false,"feedbackEnabled":true},"relationships":{"app":{"data":{"type":"apps","id":"6818797321"}}}}}

@@ -1,0 +1,26 @@
+{
+  "transport": "stdio",
+  "tools": 16,
+  "resources": 4,
+  "prompts": 1,
+  "voices": [
+    "Serena",
+    "Ethan"
+  ],
+  "preferences": {
+    "scene": "rainy-inn",
+    "voice": "Serena",
+    "ambience_dbfs": -38.0,
+    "sleep_timer_minutes": 30
+  },
+  "library_items": [
+    {
+      "id": "06277f5d-12c6-4b65-b828-028b886df004",
+      "status": "ready"
+    },
+    {
+      "id": "49df1434-5da8-41f2-b050-3ee0bc4a0aeb",
+      "status": "ready"
+    }
+  ]
+}

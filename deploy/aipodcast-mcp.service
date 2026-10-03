@@ -1,0 +1,24 @@
+[Unit]
+Description=Night Harbor account-scoped MCP endpoint
+After=network-online.target aipodcast.service
+Wants=network-online.target
+
+[Service]
+User=aipodcast
+Group=aipodcast
+WorkingDirectory=/opt/aipodcast/current
+Environment=AIPODCAST_API_URL=http://127.0.0.1:3211/podcast/api
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/aipodcast/venv/bin/python mcp/server.py --transport streamable-http
+Restart=on-failure
+RestartSec=5
+MemoryMax=128M
+CPUQuota=30%
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

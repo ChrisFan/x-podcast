@@ -1,0 +1,10 @@
+[Unit]
+Description=Night Harbor daily backup timer
+
+[Timer]
+OnCalendar=*-*-* 03:40:00 Asia/Shanghai
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

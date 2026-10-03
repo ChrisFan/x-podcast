@@ -1,0 +1,21 @@
+{
+  "backup": "/var/backups/aipodcast/snapshot-20261002T143039Z",
+  "temporary_database": "aipodcast_restore_20261002143143",
+  "restored": {
+    "accounts": 2,
+    "podcasts": 4,
+    "jobs": 4,
+    "events": 33,
+    "ready": 2,
+    "main_script_md5": "e4407e326e482127acd1532dd9636b66"
+  },
+  "permissions": {
+    "tables_owned_by_migration_role": true,
+    "runtime_can_read": true,
+    "runtime_cannot_create": true
+  },
+  "audio": {
+    "mp3_files_verified": 6
+  },
+  "passed": true
+}
