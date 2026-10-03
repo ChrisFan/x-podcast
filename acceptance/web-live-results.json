@@ -1,0 +1,14 @@
+{
+  "passed": [
+    "login",
+    "shared-library",
+    "create-draft",
+    "delete-draft",
+    "mp3-playback-clock",
+    "seek",
+    "timer",
+    "mobile-no-overflow",
+    "logout-stops-audio"
+  ],
+  "js_errors": []
+}

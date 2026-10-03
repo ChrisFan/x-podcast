@@ -1,0 +1,27 @@
+active
+active
+active
+aluminum-cloud-test-db | Up About an hour | 127.0.0.1:55439->5432/tcp
+waterline-api-1 | Up 7 weeks (healthy) | 127.0.0.1:8080->8080/tcp
+waterline-db-1 | Up 7 weeks (healthy) | 5432/tcp
+umami-umami-1 | Up 2 months (healthy) | 127.0.0.1:3000->3000/tcp
+umami-db-1 | Up 2 months (healthy) | 5432/tcp
+{"ok":true,"emailAvailable":true,"emailDelivery":"smtp"}State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess
+LISTEN 0      128          0.0.0.0:22         0.0.0.0:*
+LISTEN 0      4096       127.0.0.1:3000       0.0.0.0:*
+LISTEN 0      511          0.0.0.0:443        0.0.0.0:*
+LISTEN 0      511        127.0.0.1:5190       0.0.0.0:*
+LISTEN 0      4096       127.0.0.1:42121      0.0.0.0:*
+LISTEN 0      511        127.0.0.1:3210       0.0.0.0:*
+LISTEN 0      2048       127.0.0.1:3211       0.0.0.0:*
+LISTEN 0      2048       127.0.0.1:3212       0.0.0.0:*
+LISTEN 0      4096       127.0.0.1:55439      0.0.0.0:*
+LISTEN 0      4096       127.0.0.1:8080       0.0.0.0:*
+LISTEN 0      511          0.0.0.0:80         0.0.0.0:*
+LISTEN 0      128             [::]:22            [::]:*
+LISTEN 0      511             [::]:80            [::]:*
+              total        used        free      shared  buff/cache   available
+Mem:           1870        1061         277         127         827         809
+Swap:          2047         214        1833
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda3        40G   12G   26G  32% /

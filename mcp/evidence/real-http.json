@@ -1,0 +1,70 @@
+{
+  "transport": "http",
+  "tools": 16,
+  "resources": 4,
+  "prompts": 1,
+  "voices": [
+    "Serena",
+    "Ethan"
+  ],
+  "preferences": {
+    "scene": "rainy-inn",
+    "voice": "Serena",
+    "ambience_dbfs": -38.0,
+    "sleep_timer_minutes": 30
+  },
+  "validation": {
+    "valid": true,
+    "characters": 33
+  },
+  "created_status": "draft",
+  "podcast_id": "06277f5d-12c6-4b65-b828-028b886df004",
+  "duplicate_request_same_podcast": true,
+  "final_status": "ready",
+  "progress": 100,
+  "events": [
+    {
+      "status": "draft",
+      "stage": "草稿已保存",
+      "created_at": "2026-10-02T14:14:05.134807+00:00"
+    },
+    {
+      "status": "queued",
+      "stage": "等待制作",
+      "created_at": "2026-10-02T14:14:05.239971+00:00"
+    },
+    {
+      "status": "generating",
+      "stage": "准备声音",
+      "created_at": "2026-10-02T14:14:31.166628+00:00"
+    },
+    {
+      "status": "generating",
+      "stage": "正在录制第 1/1 段",
+      "created_at": "2026-10-02T14:14:31.176944+00:00"
+    },
+    {
+      "status": "mixing",
+      "stage": "正在铺入雨声与留白",
+      "created_at": "2026-10-02T14:14:33.980557+00:00"
+    },
+    {
+      "status": "ready",
+      "stage": "今晚的声音准备好了",
+      "created_at": "2026-10-02T14:14:35.028037+00:00"
+    }
+  ],
+  "audio_link": {
+    "ready": true,
+    "title": "MCP 验收 · 窗边雨声",
+    "audio_url": "https://alu-designer.pawlpixel.com/podcast/api/podcasts/06277f5d-12c6-4b65-b828-028b886df004/audio",
+    "authentication": "Bearer header required; not a public playback link",
+    "web_url": "https://alu-designer.pawlpixel.com/podcast/",
+    "duration_seconds": 20.24
+  },
+  "audio_range": {
+    "status": 206,
+    "bytes": 1024,
+    "type": "audio/mpeg"
+  }
+}

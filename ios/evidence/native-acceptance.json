@@ -1,0 +1,57 @@
+{
+  "passed": true,
+  "device": "4342D402-D677-4AC2-9BDA-062E8FB33957",
+  "api": "https://alu-designer.pawlpixel.com/podcast/api",
+  "ready_title": "雨夜旅馆 · 云端首夜",
+  "result_bundle": "/Users/chris/Cosmos/AIPodcast/ios/build/LiveAcceptance-20261002-224311.xcresult",
+  "checks": [
+    "real login with Keychain",
+    "create and delete cloud draft",
+    "cloud audio download",
+    "seek and background playback with advancing clock",
+    "20 second episode naturally finishes and stops",
+    "end of track timer selection",
+    "cached playback with network denied and advancing clock",
+    "logout hides account cache"
+  ],
+  "validated_at": "2026-10-02T22:45:45+08:00",
+  "simulator": "iPhone 17 Pro / iOS 26.2",
+  "build": "ios/build/Build/Products/Debug-iphonesimulator/NightHarbor.app",
+  "unit_tests": {
+    "passed": 6,
+    "failed": 0
+  },
+  "onboarding_ui_test": {
+    "passed": true
+  },
+  "live_ui_test": {
+    "passed": true,
+    "duration_seconds": 89.078
+  },
+  "background_playback": {
+    "passed": true,
+    "background_seconds": 3,
+    "clock_advanced": true
+  },
+  "offline_playback": {
+    "passed": true,
+    "network_mode": "DEBUG URLProtocol rejects every HTTP and HTTPS request; actual previously downloaded MP3 and metadata used",
+    "clock_advanced": true
+  },
+  "end_of_track": {
+    "passed": true,
+    "title": "MCP 验收 · 窗边雨声",
+    "duration_seconds": 20.24,
+    "timer_selection": "本集结束",
+    "observed_elapsed": "0:20",
+    "play_button_restored": true,
+    "timer_reset_to_off": true
+  },
+  "boundaries": [
+    "Physical iPhone and overnight playback not tested",
+    "Lockscreen NowPlaying and remote controls implemented but not directly exercised",
+    "15/30/45/60 minute timer expiry and final volume fade not waited through",
+    "First playback downloads complete MP3 before playing; progressive streaming not implemented",
+    "TestFlight and App Store distribution not performed"
+  ]
+}

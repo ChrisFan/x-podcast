@@ -1,0 +1,17 @@
+import {readFile} from 'node:fs/promises';
+import {homedir} from 'node:os';
+import {sign} from 'node:crypto';
+const config=JSON.parse(await readFile(process.env.ASC_CONFIG_PATH || `${homedir()}/.config/aipodcast/appstoreconnect/config.json`,'utf8'));
+if(config.teamId!=='DXH9X9Y868' || config.bundleId!=='com.pawlpixel.NightHarbor' || config.appAppleId!=='6818797321') throw new Error('AIPodcast target configuration mismatch');
+const b64=o=>Buffer.from(JSON.stringify(o)).toString('base64url');
+const now=Math.floor(Date.now()/1000);
+const input=b64({alg:'ES256',kid:config.keyId,typ:'JWT'})+'.'+b64({sub:'user',iat:now-5,exp:now+600,aud:'appstoreconnect-v1'});
+const jwt=input+'.'+sign('sha256',Buffer.from(input),{key:await readFile(config.privateKeyPath),dsaEncoding:'ieee-p1363'}).toString('base64url');
+const path=process.argv[2];
+if(!path?.startsWith('/v1/')) throw new Error('Only Apple /v1/ paths are allowed');
+const method=process.argv[3] || 'GET';
+const body=process.argv[4] ? await readFile(process.argv[4],'utf8') : undefined;
+const response=await fetch('https://api.appstoreconnect.apple.com'+path,{method,headers:{Authorization:`Bearer ${jwt}`,'Content-Type':'application/json'},body,signal:AbortSignal.timeout(30000)});
+const data=await response.text();
+console.log(JSON.stringify({status:response.status,body:data ? JSON.parse(data) : null},null,2));
+if(!response.ok) process.exitCode=1;

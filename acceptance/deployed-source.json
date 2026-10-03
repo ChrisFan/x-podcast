@@ -1,0 +1,14 @@
+{
+  "release": "20261002-222336",
+  "sha256": {
+    "server/app.py": "a733f641ecbde7b2c95d834ff291d3f07c9e5f8102453621b81fe34e17862960",
+    "server/models.py": "174ede5024f02ccd4ead86ea82cb193bbed294d65a257179b0ceebeb88ca62d6",
+    "server/schema.sql": "5c4addead7f8ec72648530f67d298691742db603677d864beb6d5fe1bd0f8885",
+    "web/app.js": "dec14faee946549359582ab46641d7350f8aa6d0e1456365950d416c36ffd153",
+    "web/index.html": "8db34519eb40cbedaa9570f5a90d18f587e62cc9b70683ba67cafcba23a9ba67",
+    "mcp/server.py": "5f75e63bec7cb460d62e721633f68d970263708783a913572ae94a9c31d971ee",
+    "podcast.py": "69e8efefe779848125c8d2519e6c1ba36d1b2452214e2c62cbca1e1d7ad9f516",
+    "deploy/backup.sh": "c6524ee200e45158ab05990f9e7bc2a741a92e38654dcb94b4ed90335f0154c4"
+  },
+  "matches_local": true
+}

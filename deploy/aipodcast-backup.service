@@ -1,0 +1,12 @@
+[Unit]
+Description=Night Harbor isolated database and audio backup
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/aipodcast/current/deploy/backup.sh
+Nice=10
+IOSchedulingClass=idle
+MemoryMax=192M
+CPUQuota=30%
+UMask=0077

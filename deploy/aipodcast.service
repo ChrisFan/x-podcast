@@ -1,0 +1,30 @@
+[Unit]
+Description=Night Harbor API and serial podcast generator
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+User=aipodcast
+Group=aipodcast
+WorkingDirectory=/opt/aipodcast/current
+EnvironmentFile=/etc/aipodcast/api.env
+Environment=PYTHONUNBUFFERED=1
+Environment=FFMPEG_BINARY=/opt/aipodcast/runtime/ffmpeg
+Environment=OPENBLAS_NUM_THREADS=1
+Environment=OMP_NUM_THREADS=1
+ExecStart=/opt/aipodcast/venv/bin/python -m uvicorn server.app:app --host 127.0.0.1 --port 3211 --workers 1 --no-access-log
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=15
+KillMode=control-group
+MemoryMax=600M
+CPUQuota=100%
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/aipodcast
+
+[Install]
+WantedBy=multi-user.target

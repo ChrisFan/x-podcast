@@ -1,0 +1,23 @@
+{
+  "local_audio": {
+    "passed": 7,
+    "command": ".venv/bin/python -m unittest discover -s tests -v"
+  },
+  "server": {
+    "passed": 13,
+    "environment": "ECS PostgreSQL, production API stopped during tests then restored",
+    "command": "/opt/aipodcast/venv/bin/python -m unittest server.test_validation server.test_integration -v"
+  },
+  "mcp": {
+    "passed": 3,
+    "command": "mcp/.venv/bin/python -m unittest discover -s mcp/tests -v"
+  },
+  "note": "Server integration tests substitute provider audio; real Aliyun generation is recorded separately in api-live-results.json, restart-results.json and mcp/evidence/real-http.json.",
+  "ios": {
+    "unit_tests_passed": 6,
+    "onboarding_ui_passed": true,
+    "live_ui_passed": true,
+    "live_ui_duration_seconds": 89,
+    "evidence": "ios/evidence/native-acceptance.json"
+  }
+}

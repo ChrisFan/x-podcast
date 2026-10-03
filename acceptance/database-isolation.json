@@ -1,0 +1,13 @@
+{
+  "runtime_role": {
+    "name": "aipodcast_runtime",
+    "superuser": false,
+    "createdb": false,
+    "createrole": false
+  },
+  "own_database": "aipodcast",
+  "schema_create_denied": true,
+  "other_database_denied": true,
+  "aluminum_cannot_connect_aipodcast": true,
+  "aipodcast_cannot_connect_aluminum": true
+}
